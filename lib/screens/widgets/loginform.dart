@@ -1,0 +1,53 @@
+import 'package:flutter/material.dart';
+
+class loginform extends StatelessWidget {
+  TextEditingController controller;
+  TextInputType? textInputType;
+  bool? hidepassword;
+  String? Function(String?)? validator;
+  final String? labeltext;
+  Widget? suffixicon;
+  IconData? prefixicon;
+  TextInputType? keyboardtype;
+  String? helpertext;
+  AutovalidateMode? autovalidateMode;
+  void Function(String)? onchanged;
+  loginform(
+      {Key? key,
+      required this.controller,
+      this.hidepassword,
+      this.labeltext,
+      this.suffixicon,
+      this.prefixicon,
+      this.validator,
+      this.textInputType,
+      this.keyboardtype,
+      this.helpertext,
+      this.autovalidateMode,
+      this.onchanged})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      validator: validator,
+      autovalidateMode: autovalidateMode,
+      onChanged: onchanged,
+      obscureText: hidepassword ?? false,
+      keyboardType: keyboardtype ?? TextInputType.text,
+      controller: controller,
+      decoration: InputDecoration(
+        helperText:
+            helpertext, //mostrato come aiuto se non ci sono errori nei campi
+        helperMaxLines: 3,
+
+        labelText: labeltext,
+        prefixIcon: Icon(
+          prefixicon,
+          color: Colors.black,
+        ),
+        suffixIcon: suffixicon,
+      ),
+    );
+  }
+}
