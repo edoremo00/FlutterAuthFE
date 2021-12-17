@@ -37,6 +37,10 @@ class loginform extends StatelessWidget {
       keyboardType: keyboardtype ?? TextInputType.text,
       controller: controller,
       decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        contentPadding: EdgeInsets.all(20),
+        helperStyle: TextStyle(color: Colors.blue[600]),
+
         helperText:
             helpertext, //mostrato come aiuto se non ci sono errori nei campi
         helperMaxLines: 3,
