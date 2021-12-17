@@ -10,6 +10,18 @@ String? validateusername(String? username) {
   }
 }
 
+String? validatesurname(String? surname) {
+  if (surname!.isEmpty) {
+    return 'surname is required';
+  } else if (surname.startsWith(RegExp('[0-9]'))) {
+    return "surname can't begin with numbers";
+  } else if (surname.contains(' ')) {
+    return "surname can't contain spaces";
+  } else {
+    return null;
+  }
+}
+
 String? validatepassword(String? password) {
   if (password!.isEmpty) {
     return 'provide a password';
@@ -27,6 +39,24 @@ String? validatepassword(String? password) {
 bool validatepasswordstructure(String value) {
   String pattern =
       r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
-  RegExp regExp = new RegExp(pattern);
+  RegExp regExp = RegExp(pattern);
   return regExp.hasMatch(value);
+}
+
+String? validateemail(String? email) {
+  String pattern =
+      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{;|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$";
+  RegExp regExp = RegExp(pattern);
+  if (regExp.hasMatch(email!)) {
+    return null;
+  } else {
+    return 'not a valid email';
+  }
+}
+
+bool passwordmatch(String password, String confirmpassword) {
+  if (password.toLowerCase() == confirmpassword.toLowerCase()) {
+    return true;
+  }
+  return false;
 }
