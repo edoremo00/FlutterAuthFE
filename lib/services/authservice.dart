@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:authapi/models/authmodel.dart';
+
 import 'package:http/http.dart';
 
 import 'package:http/http.dart' as http;
@@ -19,5 +20,19 @@ Future<void> login(Loginmodel user) async {
   } else {
     print('si è verificato un errore');
     print(r.body);
+  }
+}
+
+Future<bool> register(Registermodel registermodel) async {
+  Response r = await http.post(Uri.parse("$apibaseurl/Auth/Register"),
+      body: jsonEncode(registermodel),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json'
+      });
+  if (r.statusCode == 200) {
+    return true;
+  } else {
+    return false;
   }
 }
