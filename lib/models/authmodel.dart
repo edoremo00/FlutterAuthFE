@@ -10,7 +10,7 @@ class Loginmodel {
 
   Map<String, dynamic> toJson() {
     //IMPORTANTE TOJSON DEVE ESSERE SCRITTO COSì SENNO NON RIESCE A TRADURRE OGGETTO DART IN JSON DANDO ECCEZIONE
-    return {'username': username, 'password': password};
+    return <String, dynamic>{'username': username, 'password': password};
   }
 }
 
@@ -25,21 +25,20 @@ class Registermodel {
   String? confirmpassword;
 
   Registermodel(
-      {required this.username,
-      required this.name,
-      required this.email,
-      required this.confirmpassword,
-      required this.password,
-      required this.surname});
+      {this.username,
+      this.name,
+      this.email,
+      this.confirmpassword,
+      this.password,
+      this.surname});
 
   Map<String, dynamic> toJson() {
-    return {
+    return <String, dynamic>{
       'Username': username,
-      'name': name,
-      'surname': surname,
-      'Email': email,
+      'Surname': surname,
       'Password': password,
-      'Confirmapassword': confirmpassword
+      'ConfirmPassword': confirmpassword,
+      'Email': email
     };
   }
 }
