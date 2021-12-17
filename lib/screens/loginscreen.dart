@@ -1,5 +1,6 @@
 import 'package:authapi/formvalidators/formvalidator.dart';
 import 'package:authapi/models/authmodel.dart';
+import 'package:authapi/screens/registerform.dart';
 import 'package:authapi/screens/widgets/loginform.dart';
 import 'package:authapi/services/authservice.dart';
 import 'package:flutter/material.dart';
@@ -15,11 +16,12 @@ class _loginscreenState extends State<loginscreen> {
   late TextEditingController usernamecontroller;
   late TextEditingController passwordcontroller;
   bool hidepass = true;
+  Registermodel reg = Registermodel();
 
   @override
   void initState() {
-    usernamecontroller = TextEditingController();
-    passwordcontroller = TextEditingController();
+    usernamecontroller = TextEditingController(); //text: reg.username ?? ''
+    passwordcontroller = TextEditingController(); //text: reg.password ?? ''
 
     super.initState();
   }
@@ -63,113 +65,128 @@ class _loginscreenState extends State<loginscreen> {
           ),
           body: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  margin: const EdgeInsets.all(30.0),
-                  width: 80,
-                  height: 375,
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.horizontal(
-                      left: Radius.circular(10),
-                      right: Radius.circular(10),
+            child: Container(
+              margin:
+                  EdgeInsets.only(top: MediaQuery.of(context).size.height / 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(30.0),
+                    width: 80,
+                    height: 430,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.horizontal(
+                        left: Radius.circular(10),
+                        right: Radius.circular(10),
+                      ),
+                      color: Colors.white,
                     ),
-                    color: Colors.white,
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: loginform(
-                          onchanged: (username) {
-                            model.username = username;
-                          },
-                          labeltext: 'Username',
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          prefixicon: Icons.person_outline_rounded,
-                          validator: validateusername,
-                          controller: usernamecontroller,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 20),
+                            child: loginform(
+                              onchanged: (username) {
+                                model.username = username;
+                              },
+                              labeltext: 'Username',
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              prefixicon: Icons.person_outline_rounded,
+                              validator: validateusername,
+                              controller: usernamecontroller,
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: loginform(
-                          onchanged: (password) {
-                            model.password = password;
-                          },
-                          hidepassword: hidepass,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          helpertext:
-                              'password should at least have: 1 uppercase char, 1 number,1 special char,numbers and a minimum length of 8',
-                          controller: passwordcontroller,
-                          labeltext: 'Password',
-                          //prefixicon: Icons.password_rounded,
-                          suffixicon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                hidepass = !hidepass;
-                              });
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: loginform(
+                            onchanged: (password) {
+                              model.password = password;
                             },
-                            icon: Icon(
-                              hidepass
-                                  ? Icons.visibility_rounded
-                                  : Icons.visibility_off_rounded,
-                              color: Colors.black,
+                            hidepassword: hidepass,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            helpertext:
+                                'password should at least have: 1 uppercase char, 1 number,1 special char,numbers and a minimum length of 8',
+                            controller: passwordcontroller,
+                            labeltext: 'Password',
+                            //prefixicon: Icons.password_rounded,
+                            suffixicon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  hidepass = !hidepass;
+                                });
+                              },
+                              icon: Icon(
+                                hidepass
+                                    ? Icons.visibility_rounded
+                                    : Icons.visibility_off_rounded,
+                                color: Colors.black,
+                              ),
+                            ),
+                            validator: validatepassword,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Container(
+                          height: 80,
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(15),
+                          child: ElevatedButton(
+                            child: const Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            onPressed:
+                                _formkey.currentState?.validate() ?? false
+                                    ? () async {
+                                        setState(() {});
+                                        _formkey.currentState!.save();
+                                        await login(model);
+                                      }
+                                    : null,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 1,
+                        ),
+                        GestureDetector(
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 10),
+                            child: Text(
+                              'or register here',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.blue.shade700,
+                              ),
                             ),
                           ),
-                          validator: validatepassword,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(15),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              enableFeedback: true,
-                              minimumSize: const Size.fromHeight(40),
-                              maximumSize: const Size.fromHeight(40)),
-                          onPressed: usernamecontroller.text.isEmpty ||
-                                  passwordcontroller.text.isEmpty ||
-                                  usernamecontroller.text.isEmpty &&
-                                      passwordcontroller.text.isEmpty
-                              ? null
-                              : () async {
-                                  _formkey.currentState!.save();
-                                  await login(model);
-                                },
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Registerform(),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 1,
-                      ),
-                      GestureDetector(
-                        child: Text(
-                          'or register here',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            color: Colors.blue.shade700,
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
