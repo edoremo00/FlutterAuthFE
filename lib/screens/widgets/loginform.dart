@@ -7,7 +7,7 @@ class loginform extends StatelessWidget {
   String? Function(String?)? validator;
   final String? labeltext;
   Widget? suffixicon;
-  IconData? prefixicon;
+  Widget? prefixicon;
   TextInputType? keyboardtype;
   String? helpertext;
   AutovalidateMode? autovalidateMode;
@@ -37,19 +37,13 @@ class loginform extends StatelessWidget {
       keyboardType: keyboardtype ?? TextInputType.text,
       controller: controller,
       decoration: InputDecoration(
+        prefixIcon: prefixicon,
         border: OutlineInputBorder(),
-        contentPadding: EdgeInsets.all(20),
         helperStyle: TextStyle(color: Colors.blue[600]),
-
         helperText:
             helpertext, //mostrato come aiuto se non ci sono errori nei campi
         helperMaxLines: 3,
-
         labelText: labeltext,
-        prefixIcon: Icon(
-          prefixicon,
-          color: Colors.black,
-        ),
         suffixIcon: suffixicon,
       ),
     );
