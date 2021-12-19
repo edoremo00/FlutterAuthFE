@@ -1,6 +1,6 @@
 import 'package:authapi/formvalidators/formvalidator.dart';
 import 'package:authapi/models/authmodel.dart';
-import 'package:authapi/screens/registerform.dart';
+import 'package:authapi/screens/registerformscreen.dart';
 import 'package:authapi/screens/widgets/loginform.dart';
 import 'package:authapi/services/authservice.dart';
 import 'package:flutter/material.dart';
@@ -16,14 +16,12 @@ class _loginscreenState extends State<loginscreen> {
   late TextEditingController usernamecontroller;
   late TextEditingController passwordcontroller;
   bool hidepass = true;
-  Registermodel reg = Registermodel();
 
   @override
   void initState() {
-    usernamecontroller = TextEditingController(); //text: reg.username ?? ''
-    passwordcontroller = TextEditingController(); //text: reg.password ?? ''
-
     super.initState();
+    usernamecontroller = TextEditingController();
+    passwordcontroller = TextEditingController();
   }
 
   @override
@@ -90,15 +88,33 @@ class _loginscreenState extends State<loginscreen> {
                           child: Container(
                             margin: const EdgeInsets.only(top: 20),
                             child: loginform(
+                              controller: usernamecontroller,
+                              validator: (username) {
+                                if (username!.isEmpty) {
+                                  Future.delayed(Duration.zero)
+                                      .then((value) => setState(() {}));
+                                  return 'username is required';
+                                } else if (username
+                                    .startsWith(RegExp('[0-9]'))) {
+                                  Future.delayed(Duration.zero)
+                                      .then((value) => setState(() {}));
+                                  return "username can't begin with numbers";
+                                } else if (username.contains(' ')) {
+                                  Future.delayed(Duration.zero)
+                                      .then((value) => setState(() {}));
+                                  return "username can't contain spaces";
+                                } else {
+                                  Future.delayed(Duration.zero)
+                                      .then((value) => setState(() {}));
+                                  return null;
+                                }
+                              },
                               onchanged: (username) {
                                 model.username = username;
                               },
                               labeltext: 'Username',
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              prefixicon: Icons.person_outline_rounded,
-                              validator: validateusername,
-                              controller: usernamecontroller,
+                              prefixicon:
+                                  const Icon(Icons.person_outline_rounded),
                             ),
                           ),
                         ),
@@ -112,8 +128,7 @@ class _loginscreenState extends State<loginscreen> {
                               model.password = password;
                             },
                             hidepassword: hidepass,
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
+
                             helpertext:
                                 'password should at least have: 1 uppercase char, 1 number,1 special char,numbers and a minimum length of 8',
                             controller: passwordcontroller,
@@ -129,10 +144,32 @@ class _loginscreenState extends State<loginscreen> {
                                 hidepass
                                     ? Icons.visibility_rounded
                                     : Icons.visibility_off_rounded,
-                                color: Colors.black,
                               ),
                             ),
-                            validator: validatepassword,
+                            validator: (password) {
+                              if (password!.isEmpty) {
+                                Future.delayed(Duration.zero)
+                                    .then((value) => setState(() {}));
+                                return 'provide a password';
+                              } else if (password.contains(' ')) {
+                                Future.delayed(Duration.zero)
+                                    .then((value) => setState(() {}));
+                                return "password can't contain whitespaces";
+                              } else if (password.length < 8) {
+                                Future.delayed(Duration.zero)
+                                    .then((value) => setState(() {}));
+                                return "password should at least have 8 characters";
+                              } else if (validatepasswordstructure(password) ==
+                                  false) {
+                                Future.delayed(Duration.zero)
+                                    .then((value) => setState(() {}));
+                                return "password doesn't match requisites";
+                              } else {
+                                Future.delayed(Duration.zero)
+                                    .then((value) => setState(() {}));
+                                return null;
+                              }
+                            },
                           ),
                         ),
                         const SizedBox(
@@ -153,7 +190,6 @@ class _loginscreenState extends State<loginscreen> {
                             onPressed:
                                 _formkey.currentState?.validate() ?? false
                                     ? () async {
-                                        setState(() {});
                                         _formkey.currentState!.save();
                                         await login(model);
                                       }
@@ -175,12 +211,24 @@ class _loginscreenState extends State<loginscreen> {
                               ),
                             ),
                           ),
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const Registerform(),
-                            ),
-                          ),
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const Registerformscreen(),
+                              ),
+                            );
+                            if (result != null) {
+                              result as Registermodel;
+                              setState(() {
+                                usernamecontroller.text = result.username!;
+                                passwordcontroller.text = result.password!;
+                                model.username = result.username!;
+                                model.password = result.password!;
+                              });
+                            }
+                          },
                         ),
                       ],
                     ),
