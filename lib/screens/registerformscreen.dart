@@ -4,14 +4,14 @@ import 'package:authapi/screens/widgets/loginform.dart';
 import 'package:authapi/services/authservice.dart';
 import 'package:flutter/material.dart';
 
-class Registerform extends StatefulWidget {
-  const Registerform({Key? key}) : super(key: key);
+class Registerformscreen extends StatefulWidget {
+  const Registerformscreen({Key? key}) : super(key: key);
 
   @override
-  _RegisterformState createState() => _RegisterformState();
+  _RegisterformscreenState createState() => _RegisterformscreenState();
 }
 
-class _RegisterformState extends State<Registerform> {
+class _RegisterformscreenState extends State<Registerformscreen> {
   late TextEditingController usernamecontroller;
   late TextEditingController surnamecontroller;
   late TextEditingController emailcontroller;
@@ -64,10 +64,28 @@ class _RegisterformState extends State<Registerform> {
                   reg.username = username;
                 },
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                prefixicon: Icons.person_outline_rounded,
+                prefixicon: Icon(Icons.person_outline_rounded),
                 controller: usernamecontroller,
                 labeltext: 'username',
-                validator: validateusername,
+                validator: (username) {
+                  if (username!.isEmpty) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return 'username is required';
+                  } else if (username.startsWith(RegExp('[0-9]'))) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return "username can't begin with numbers";
+                  } else if (username.contains(' ')) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return "username can't contain spaces";
+                  } else {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return null;
+                  }
+                },
               ),
             ),
             const SizedBox(
@@ -81,7 +99,25 @@ class _RegisterformState extends State<Registerform> {
                 },
                 controller: surnamecontroller,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: validatesurname,
+                validator: (surname) {
+                  if (surname!.isEmpty) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return 'surname is required';
+                  } else if (surname.startsWith(RegExp('[0-9]'))) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return "surname can't begin with numbers";
+                  } else if (surname.contains(' ')) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return "surname can't contain spaces";
+                  } else {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return null;
+                  }
+                },
                 labeltext: 'surname',
               ),
             ),
@@ -97,9 +133,22 @@ class _RegisterformState extends State<Registerform> {
                 controller: emailcontroller,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 labeltext: 'email',
-                validator: validateemail,
+                validator: (email) {
+                  String pattern =
+                      r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{;|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$";
+                  RegExp regExp = RegExp(pattern);
+                  if (regExp.hasMatch(email!)) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return null;
+                  } else {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return 'not a valid email';
+                  }
+                },
                 keyboardtype: TextInputType.emailAddress,
-                prefixicon: Icons.email_outlined,
+                prefixicon: const Icon(Icons.email_outlined),
               ),
             ),
             const SizedBox(
@@ -114,7 +163,29 @@ class _RegisterformState extends State<Registerform> {
                 controller: passwordcontroller,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 hidepassword: true,
-                validator: validatepassword,
+                validator: (password) {
+                  if (password!.isEmpty) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return 'provide a password';
+                  } else if (password.contains(' ')) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return "password can't contain whitespaces";
+                  } else if (password.length < 8) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return "password should at least have 8 characters";
+                  } else if (validatepasswordstructure(password) == false) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return "password doesn't match requisites";
+                  } else {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
+                    return null;
+                  }
+                },
                 helpertext:
                     'password should at least have: 1 uppercase char, 1 number,1 special char,numbers and a minimum length of 8',
                 labeltext: 'password',
@@ -134,16 +205,26 @@ class _RegisterformState extends State<Registerform> {
                 hidepassword: true,
                 validator: (confirmpassword) {
                   if (confirmpassword!.isEmpty) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
                     return 'provide a confirmpassword';
                   } else if (confirmpassword.contains(' ')) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
                     return "confirmpassword can't contain spaces";
                   } else if (confirmpassword.toLowerCase() !=
                       passwordcontroller.text.toLowerCase()) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
                     return 'password and confirmpassword are not equal';
                   } else if (validatepasswordstructure(confirmpassword) ==
                       false) {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
                     return 'confirmpassword should at least have 8 characters';
                   } else {
+                    Future.delayed(Duration.zero)
+                        .then((value) => setState(() {}));
                     return null;
                   }
                 },
@@ -159,12 +240,19 @@ class _RegisterformState extends State<Registerform> {
                         setState(() {});
                         bool registerresult = await register(reg);
                         if (registerresult) {
-                          Navigator.of(context).pop([
-                            reg.username,
-                            reg.password
-                          ]); //se mi sono registrato correttamente fare redirect su pagina login dove passerò username e password per precompilare campi form login
+                          Navigator.of(context).pop(
+                              reg); //se mi sono registrato correttamente fare redirect su pagina login dove passerò username e password per precompilare campi form login
                         } else {
-                          _formkey.currentState!.reset();
+                          //CASO IN CUI REGISTRAZIONE NON VA A BUON FINE RESETTO I CAMPI PER ORA POI FARE UNO SNACKBAR PER AVVISARE UTENTE
+                          setState(() {
+                            //non posso usare formkey.currentstate.save. poichè ho hai initial value o hai text
+                            usernamecontroller.clear();
+                            surnamecontroller.clear();
+                            emailcontroller.clear();
+                            passwordcontroller.clear();
+                            confirmpasswordcontroller.clear();
+                            //vengono triggerati i validator per qualche motivo
+                          });
                         }
                       }
                     : null,
