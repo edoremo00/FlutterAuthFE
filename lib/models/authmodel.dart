@@ -42,3 +42,15 @@ class Registermodel {
     };
   }
 }
+
+/*class Tokenmodel {
+  String? token;
+  DateTime? expiration;
+
+  Tokenmodel({this.token, this.expiration});
+
+  Tokenmodel.fromJson(Map<String, dynamic> json) {
+    token = json['token'];
+    expiration = json['expiration'];
+  }
+}*/
