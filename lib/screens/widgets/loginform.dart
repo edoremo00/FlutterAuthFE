@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 
 class loginform extends StatelessWidget {
@@ -10,6 +12,7 @@ class loginform extends StatelessWidget {
   Widget? prefixicon;
   TextInputType? keyboardtype;
   String? helpertext;
+  int? maxlength;
   AutovalidateMode? autovalidateMode;
   void Function(String)? onchanged;
   loginform(
@@ -24,7 +27,8 @@ class loginform extends StatelessWidget {
       this.keyboardtype,
       this.helpertext,
       this.autovalidateMode,
-      this.onchanged})
+      this.onchanged,
+      this.maxlength})
       : super(key: key);
 
   @override
@@ -32,6 +36,7 @@ class loginform extends StatelessWidget {
     return TextFormField(
       validator: validator,
       autovalidateMode: autovalidateMode,
+      maxLength: maxlength,
       onChanged: onchanged,
       obscureText: hidepassword ?? false,
       keyboardType: keyboardtype ?? TextInputType.text,
