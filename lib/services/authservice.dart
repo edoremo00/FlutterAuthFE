@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:authapi/authutils/tokenstorage.dart';
 import 'package:authapi/models/authmodel.dart';
 
 import 'package:http/http.dart';
@@ -8,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 const String apibaseurl = "http://10.0.2.2:5000/api";
 
-Future<void> login(Loginmodel user) async {
+Future<bool> login(Loginmodel user) async {
   Response r = await http.post(Uri.parse("$apibaseurl/Auth/Login"),
       body: jsonEncode(user),
       headers: {
@@ -16,10 +17,12 @@ Future<void> login(Loginmodel user) async {
         'Accept': 'application/json'
       });
   if (r.statusCode == 200) {
-    print(r.body);
+    Map<String, dynamic> jwt = jsonDecode(r.body);
+    //chiamare flutter secure storage per salvare token
+    await Tokenstorage.savetoken('token', jwt['token']);
+    return true;
   } else {
-    print('si è verificato un errore');
-    print(r.body);
+    return false;
   }
 }
 
