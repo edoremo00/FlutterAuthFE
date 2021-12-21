@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:authapi/formvalidators/formvalidator.dart';
 import 'package:authapi/models/authmodel.dart';
 import 'package:authapi/screens/widgets/loginform.dart';
@@ -60,6 +62,7 @@ class _RegisterformscreenState extends State<Registerformscreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: loginform(
+                maxlength: 12,
                 onchanged: (username) {
                   reg.username = username;
                 },
@@ -94,6 +97,7 @@ class _RegisterformscreenState extends State<Registerformscreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: loginform(
+                maxlength: 16,
                 onchanged: (surname) {
                   reg.surname = surname;
                 },
@@ -235,14 +239,32 @@ class _RegisterformscreenState extends State<Registerformscreen> {
               height: 50,
               margin: const EdgeInsets.all(30),
               child: ElevatedButton.icon(
-                onPressed: _formkey.currentState?.validate() ?? false
+                onPressed: _formkey.currentState?.validate() == true
                     ? () async {
-                        setState(() {});
                         bool registerresult = await register(reg);
                         if (registerresult) {
-                          Navigator.of(context).pop(
-                              reg); //se mi sono registrato correttamente fare redirect su pagina login dove passerò username e password per precompilare campi form login
+                          showregistersnackbar(
+                            context: context,
+                            coloresfondo: Colors.green,
+                            icona: Icons.info,
+                            testo: 'Registered successfully!',
+                          );
+                          await Future.delayed(Duration(seconds: 3)).then(
+                            (value) {
+                              ScaffoldMessenger.of(context)
+                                  .hideCurrentSnackBar();
+                              Navigator.of(context).pop(reg);
+                            },
+                          );
+
+                          //se mi sono registrato correttamente fare redirect su pagina login dove passerò username e password per precompilare campi form login
                         } else {
+                          showregistersnackbar(
+                            context: context,
+                            coloresfondo: Colors.red,
+                            icona: Icons.warning,
+                            testo: 'problem in register',
+                          );
                           //CASO IN CUI REGISTRAZIONE NON VA A BUON FINE RESETTO I CAMPI PER ORA POI FARE UNO SNACKBAR PER AVVISARE UTENTE
                           setState(() {
                             //non posso usare formkey.currentstate.save. poichè ho hai initial value o hai text
@@ -263,6 +285,28 @@ class _RegisterformscreenState extends State<Registerformscreen> {
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showregistersnackbar(
+      {required BuildContext context,
+      IconData? icona,
+      String? testo,
+      Color? coloresfondo}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: coloresfondo,
+        content: Row(
+          children: [
+            Icon(
+              icona,
+              color: Colors.white,
+            ),
+            SizedBox(width: 8),
+            Text(testo!)
           ],
         ),
       ),
