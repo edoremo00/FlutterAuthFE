@@ -1,5 +1,6 @@
 import 'package:authapi/formvalidators/formvalidator.dart';
 import 'package:authapi/models/authmodel.dart';
+import 'package:authapi/screens/mainpage.dart';
 import 'package:authapi/screens/registerformscreen.dart';
 import 'package:authapi/screens/widgets/loginform.dart';
 import 'package:authapi/services/authservice.dart';
@@ -31,14 +32,14 @@ class _loginscreenState extends State<loginscreen> {
     super.dispose();
   }
 
-  final _formkey = GlobalKey<FormState>();
+  final _loginformkey = GlobalKey<FormState>();
   final String _title = "Login";
   Loginmodel model = Loginmodel(username: '', password: '');
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formkey,
+      key: _loginformkey,
       //onWillPop: , magari fare apparire popup che avvisa che i dati saranno persi
       child: Container(
         decoration: const BoxDecoration(
@@ -88,6 +89,9 @@ class _loginscreenState extends State<loginscreen> {
                           child: Container(
                             margin: const EdgeInsets.only(top: 20),
                             child: loginform(
+                              maxlength: 12,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
                               controller: usernamecontroller,
                               validator: (username) {
                                 if (username!.isEmpty) {
@@ -187,13 +191,50 @@ class _loginscreenState extends State<loginscreen> {
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
-                            onPressed:
-                                _formkey.currentState?.validate() ?? false
-                                    ? () async {
-                                        _formkey.currentState!.save();
-                                        await login(model);
-                                      }
-                                    : null,
+                            onPressed: _loginformkey.currentState?.validate() ??
+                                    false
+                                ? () async {
+                                    _loginformkey.currentState!.save();
+                                    bool loginresult = await login(model);
+                                    if (!loginresult) {
+                                      ScaffoldMessenger.of(context)
+                                          .showMaterialBanner(
+                                        MaterialBanner(
+                                          leading:
+                                              const Icon(Icons.warning_rounded),
+                                          content: const Text(
+                                            'Something went wrong',
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                ScaffoldMessenger.of(context)
+                                                    .hideCurrentMaterialBanner();
+                                              },
+                                              child: const Text(
+                                                'DISMISS',
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    } else {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute<void>(
+                                          builder: (BuildContext context) =>
+                                              mainPage(
+                                            model: model,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                : null,
                           ),
                         ),
                         const SizedBox(
@@ -212,6 +253,8 @@ class _loginscreenState extends State<loginscreen> {
                             ),
                           ),
                           onTap: () async {
+                            //chiude la tastiera
+                            FocusScope.of(context).unfocus();
                             final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
