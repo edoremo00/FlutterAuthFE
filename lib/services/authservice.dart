@@ -6,6 +6,7 @@ import 'package:authapi/models/authmodel.dart';
 import 'package:http/http.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 const String apibaseurl = "http://10.0.2.2:5000/api";
 
@@ -38,4 +39,17 @@ Future<bool> register(Registermodel registermodel) async {
   } else {
     return false;
   }
+}
+
+Future<bool> istokenexpired() async {
+  String? token = await Tokenstorage.retrievetokenvalue('token');
+  if (token != null && token != "") {
+    bool hasExpired = JwtDecoder.isExpired(token);
+    if (hasExpired) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  return true;
 }
