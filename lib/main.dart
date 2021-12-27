@@ -1,7 +1,12 @@
 import 'package:authapi/screens/loginscreen.dart';
+import 'package:authapi/screens/mainpage.dart';
+import 'package:authapi/services/authservice.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+bool jwtexpired = false;
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  jwtexpired = await istokenexpired();
   runApp(const MyApp());
 }
 
@@ -26,7 +31,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: loginscreen(),
+      home: jwtexpired ? loginscreen() : mainPage(),
     );
   }
 }
