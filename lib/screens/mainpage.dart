@@ -1,8 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:authapi/authutils/tokenstorage.dart';
 import 'package:authapi/models/authmodel.dart';
-import 'package:authapi/screens/loginscreen.dart';
+import 'package:authapi/screens/customerscreen.dart';
+import 'package:authapi/screens/landingscreen.dart';
+import 'package:authapi/screens/settingspage.dart';
 import 'package:flutter/material.dart';
 
 class mainPage extends StatefulWidget {
@@ -14,74 +15,48 @@ class mainPage extends StatefulWidget {
 }
 
 class _mainPageState extends State<mainPage> {
+  int selectedindex = 0;
+  List<Widget> screens = [
+    Landingscreen(
+      model: Loginmodel(
+        username: 'devedo',
+        password: 'test',
+      ), //deve essere widget.model.username e widget.model.password ma ho problemi nell'accedervi
+    ),
+    Customerscreen(),
+    Settingspage(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Homepage',
-          style: TextStyle(
-            fontWeight: FontWeight.w400,
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.blue,
+        unselectedItemColor: Colors.white.withOpacity(0.7),
+        selectedItemColor: Colors.white,
+        currentIndex: selectedindex,
+        onTap: (value) {
+          setState(() {
+            selectedindex = value;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
-        ),
-        actions: [
-          CircleAvatar(
-            backgroundColor: Colors.black,
-            //ci sara immagine profilo utente dentro
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: 'People',
           ),
-          PopupMenuButton<int>(
-            onSelected: (value) => onselected(context, value),
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 0,
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.logout,
-                      color: Colors.black,
-                    ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Text('Logout'),
-                  ],
-                ),
-              ),
-            ],
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
           ),
         ],
       ),
-      body: Container(
-        height: 100,
-        width: 300,
-        child: Card(
-          margin: EdgeInsets.all(15),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  'Buongiorno, ${widget.model?.username ?? ''}',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      body: screens[selectedindex],
     );
-  }
-
-  Future<void> onselected(BuildContext context, int value) async {
-    if (value == 0) {
-      await Tokenstorage.removetokenfromstorage('token').then(
-        (value) => Navigator.of(context).pushReplacement(
-          MaterialPageRoute<void>(
-            builder: (BuildContext context) => loginscreen(),
-          ),
-        ),
-      );
-    }
   }
 }
