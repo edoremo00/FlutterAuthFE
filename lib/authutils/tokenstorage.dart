@@ -11,8 +11,14 @@ class Tokenstorage {
   static Future<void> savetoken(String key, String value) async =>
       await _storage.write(key: key, value: value);
 
-  static Future<String?> retrievetokenvalue(String key) async =>
-      await _storage.read(key: key);
+  static Future<String?> retrievetokenvalue(String key) async {
+    String? token = await _storage.read(key: key);
+    if (token != null) {
+      return token;
+    } else {
+      return null;
+    }
+  }
 
   static Future<void> removetokenfromstorage(String key) async {
     //logout
