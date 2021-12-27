@@ -2,8 +2,8 @@
 
 import 'package:authapi/formvalidators/formvalidator.dart';
 import 'package:authapi/models/authmodel.dart';
-import 'package:authapi/screens/widgets/loginform.dart';
 import 'package:authapi/services/authservice.dart';
+import 'package:authapi/widgets/loginform.dart';
 import 'package:flutter/material.dart';
 
 class Registerformscreen extends StatefulWidget {
