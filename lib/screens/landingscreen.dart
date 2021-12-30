@@ -19,17 +19,19 @@ class Landingscreen extends StatefulWidget {
 
 class _LandingscreenState extends State<Landingscreen> {
   Customermodel? loggedcustomer = Customermodel();
+  late Future<Customermodel?> customermodel;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) async {
+    customermodel = getloggeduserprofilepic(username: widget.model!.username!);
+    /*WidgetsBinding.instance!.addPostFrameCallback((_) async {
       loggedcustomer =
           await getloggeduserprofilepic(username: widget.model!.username!);
       if (loggedcustomer != null) {
         setState(() {});
       }
-    });
+    });*/
   }
 
   @override
@@ -43,7 +45,7 @@ class _LandingscreenState extends State<Landingscreen> {
           ),
         ),
         actions: [
-          CircleAvatar(
+          /*CircleAvatar(
             backgroundImage: NetworkImage(
               loggedcustomer?.imagelink == "" ||
                       loggedcustomer?.imagelink == null
@@ -52,6 +54,30 @@ class _LandingscreenState extends State<Landingscreen> {
             ),
             //backgroundColor: Colors.orange,
             //ci sara immagine profilo utente dentro
+          ),*/
+          FutureBuilder(
+            builder: (context, AsyncSnapshot<Customermodel?> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                //lascio vuoto senno vedi per pochissimo il widget qui dentro
+              } else if (snapshot.connectionState == ConnectionState.none) {
+                return const CircleAvatar(
+                  backgroundColor: Colors.black,
+                );
+              }
+              if (snapshot.hasData) {
+                Customermodel? logged = snapshot.data;
+                return CircleAvatar(
+                  backgroundImage: NetworkImage(logged!.imagelink!),
+                );
+              }
+              if (snapshot.hasError) {
+                return const CircleAvatar(
+                  backgroundColor: Colors.red,
+                );
+              }
+              return const CircleAvatar();
+            },
+            future: customermodel,
           ),
           PopupMenuButton<int>(
             onSelected: (value) => onselected(context, value),
