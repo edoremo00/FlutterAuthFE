@@ -25,6 +25,14 @@ class _editcustomerscreenState extends State<editcustomerscreen> {
   }
 
   @override
+  void dispose() {
+    usernamecontroller.dispose();
+    surnamecontroller.dispose();
+    emailcontroller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
