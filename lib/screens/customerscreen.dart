@@ -1,7 +1,9 @@
 import 'package:authapi/models/customermodel.dart';
+import 'package:authapi/screens/editcustomerscreen.dart';
 import 'package:authapi/services/customerservice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:async/async.dart';
 
 class Customerscreen extends StatefulWidget {
   Customerscreen({Key? key}) : super(key: key);
@@ -12,6 +14,14 @@ class Customerscreen extends StatefulWidget {
 
 class _CustomerscreenState extends State<Customerscreen> {
   int index = 0;
+  late Future<List<Customermodel>> getallcustomers;
+
+  @override
+  void initState() {
+    getallcustomers = Getall();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +34,7 @@ class _CustomerscreenState extends State<Customerscreen> {
         ),
       ),
       body: FutureBuilder(
-        future: Getall(),
+        future: getallcustomers,
         builder: (context, AsyncSnapshot<List<Customermodel>> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -51,7 +61,17 @@ class _CustomerscreenState extends State<Customerscreen> {
                         SlidableAction(
                           label: 'Modifica',
                           autoClose: true,
-                          onPressed: (context) {},
+                          onPressed: (context) {
+                            //navigazione a pagina modifica passando allcustomers[index]
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                    editcustomerscreen(
+                                  toupdate: allcustomers[index],
+                                ),
+                              ),
+                            );
+                          },
                           backgroundColor: Colors.orange,
                           icon: Icons.edit,
                         ),
@@ -99,7 +119,16 @@ class _CustomerscreenState extends State<Customerscreen> {
                       title: Text(allcustomers[index].username!),
                       subtitle: Text(allcustomers[index].email!),
                       trailing: const Icon(Icons.arrow_right),
-                      onTap: () {}, //NAVIGAZIONE A PAGINA DETTAGLIO
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) =>
+                                editcustomerscreen(
+                              toupdate: allcustomers[index],
+                            ),
+                          ),
+                        );
+                      }, //NAVIGAZIONE A PAGINA DETTAGLIO
                     ),
                   );
                 },
@@ -140,4 +169,11 @@ class _CustomerscreenState extends State<Customerscreen> {
       ),
     );
   }
+
+  /*_getall() async {
+    return _memoizer.runOnce(() async {
+      List<Customermodel> allcustomers = await Getall();
+      return allcustomers;
+    });
+  }*/
 }
