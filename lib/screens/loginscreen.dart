@@ -40,7 +40,6 @@ class _loginscreenState extends State<loginscreen> {
   Widget build(BuildContext context) {
     return Form(
       key: _loginformkey,
-      //onWillPop: , magari fare apparire popup che avvisa che i dati saranno persi
       child: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -60,7 +59,6 @@ class _loginscreenState extends State<loginscreen> {
                 fontWeight: FontWeight.w400,
               ),
             ),
-            centerTitle: true,
           ),
           body: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
