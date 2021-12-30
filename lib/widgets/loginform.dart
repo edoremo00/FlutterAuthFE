@@ -14,6 +14,8 @@ class loginform extends StatelessWidget {
   String? helpertext;
   int? maxlength;
   AutovalidateMode? autovalidateMode;
+  InputBorder? border;
+  bool? readonly;
   void Function(String)? onchanged;
   loginform(
       {Key? key,
@@ -28,12 +30,15 @@ class loginform extends StatelessWidget {
       this.helpertext,
       this.autovalidateMode,
       this.onchanged,
-      this.maxlength})
+      this.maxlength,
+      this.readonly,
+      this.border})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      readOnly: readonly ?? false,
       validator: validator,
       autovalidateMode: autovalidateMode,
       maxLength: maxlength,
@@ -43,7 +48,7 @@ class loginform extends StatelessWidget {
       controller: controller,
       decoration: InputDecoration(
         prefixIcon: prefixicon,
-        border: OutlineInputBorder(),
+        border: border,
         helperStyle: TextStyle(color: Colors.blue[600]),
         helperText:
             helpertext, //mostrato come aiuto se non ci sono errori nei campi
