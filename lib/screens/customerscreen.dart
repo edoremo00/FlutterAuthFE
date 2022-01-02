@@ -3,7 +3,6 @@ import 'package:authapi/screens/editcustomerscreen.dart';
 import 'package:authapi/services/customerservice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:async/async.dart';
 
 class Customerscreen extends StatefulWidget {
   Customerscreen({Key? key}) : super(key: key);
@@ -18,8 +17,8 @@ class _CustomerscreenState extends State<Customerscreen> {
 
   @override
   void initState() {
-    getallcustomers = Getall();
     super.initState();
+    getallcustomers = Getall();
   }
 
   @override
@@ -51,94 +50,111 @@ class _CustomerscreenState extends State<Customerscreen> {
               thickness: 8,
               radius: const Radius.circular(8),
               showTrackOnHover: true,
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return Slidable(
-                    key: Key(allcustomers[index].id!),
-                    startActionPane: ActionPane(
-                      motion: const ScrollMotion(),
-                      children: [
-                        SlidableAction(
-                          label: 'Modifica',
-                          autoClose: true,
-                          onPressed: (context) {
-                            //navigazione a pagina modifica passando allcustomers[index]
-                            Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (BuildContext context) =>
-                                    editcustomerscreen(
-                                  toupdate: allcustomers[index],
-                                ),
-                              ),
-                            );
-                          },
-                          backgroundColor: Colors.orange,
-                          icon: Icons.edit,
-                        ),
-                      ],
-                    ),
-                    endActionPane: ActionPane(
-                      motion: const ScrollMotion(),
-                      children: [
-                        SlidableAction(
-                          label: 'Elimina',
-                          onPressed: (context) async {
-                            bool deleteresponse = await Deletecustomer(
-                              idcustomer: allcustomers[index].id!,
-                            );
-                            if (deleteresponse) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: const Duration(seconds: 3),
-                                  content: Text(
-                                    '${allcustomers[index].username!} eliminato',
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  setState(() {});
+                }, //fa ricostruire futurebuilder avendo così dati aggiornati
+                //_pullrefresh,
+                child: ListView.separated(
+                  itemBuilder: (context, index) {
+                    return Slidable(
+                      key: Key(allcustomers[index].id!),
+                      startActionPane: ActionPane(
+                        motion: const ScrollMotion(),
+                        children: [
+                          SlidableAction(
+                            label: 'Modifica',
+                            autoClose: true,
+                            onPressed: (context) async {
+                              //navigazione a pagina modifica passando allcustomers[index]
+                              final updateresult =
+                                  await Navigator.of(context).push(
+                                MaterialPageRoute<Customermodel>(
+                                  builder: (BuildContext context) =>
+                                      editcustomerscreen(
+                                    toupdate: allcustomers[index],
                                   ),
                                 ),
                               );
-                              setState(() {
-                                allcustomers.removeAt(index);
-                              });
-                            }
-                          },
-                          autoClose: true,
-                          backgroundColor: Colors.red,
-                          icon: Icons.delete,
-                        )
-                      ],
-                    ),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        //backgroundColor: Colors.orange,
-                        backgroundImage: NetworkImage(
-                          allcustomers[index].imagelink == "" ||
-                                  allcustomers[index].imagelink == null
-                              ? 'https://www.kindpng.com/picc/m/22-223863_no-avatar-png-circle-transparent-png.png'
-                              : allcustomers[index].imagelink!,
-                        ),
-                      ),
-                      title: Text(allcustomers[index].username!),
-                      subtitle: Text(allcustomers[index].email!),
-                      trailing: const Icon(Icons.arrow_right),
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (BuildContext context) =>
-                                editcustomerscreen(
-                              toupdate: allcustomers[index],
-                            ),
+                              if (updateresult != null) {
+                                setState(() {
+                                  allcustomers[index] = updateresult;
+                                });
+                              }
+                            },
+                            backgroundColor: Colors.orange,
+                            icon: Icons.edit,
                           ),
-                        );
-                      }, //NAVIGAZIONE A PAGINA DETTAGLIO
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return const Divider(
-                    indent: 20,
-                    endIndent: 20,
-                  );
-                },
-                itemCount: allcustomers.length,
+                        ],
+                      ),
+                      endActionPane: ActionPane(
+                        motion: const ScrollMotion(),
+                        children: [
+                          SlidableAction(
+                            label: 'Elimina',
+                            onPressed: (context) async {
+                              bool deleteresponse = await Deletecustomer(
+                                idcustomer: allcustomers[index].id!,
+                              );
+                              if (deleteresponse) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    duration: const Duration(seconds: 3),
+                                    content: Text(
+                                      '${allcustomers[index].username!} eliminato',
+                                    ),
+                                  ),
+                                );
+                                setState(() {
+                                  allcustomers.removeAt(index);
+                                });
+                              }
+                            },
+                            autoClose: true,
+                            backgroundColor: Colors.red,
+                            icon: Icons.delete,
+                          )
+                        ],
+                      ),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          //backgroundColor: Colors.orange,
+                          backgroundImage: NetworkImage(
+                            allcustomers[index].imagelink == "" ||
+                                    allcustomers[index].imagelink == null
+                                ? 'https://www.kindpng.com/picc/m/22-223863_no-avatar-png-circle-transparent-png.png'
+                                : allcustomers[index].imagelink!,
+                          ),
+                        ),
+                        title: Text(allcustomers[index].username!),
+                        subtitle: Text(allcustomers[index].email!),
+                        trailing: const Icon(Icons.arrow_right),
+                        onTap: () async {
+                          final updateresult = await Navigator.of(context).push(
+                            MaterialPageRoute<Customermodel>(
+                              builder: (BuildContext context) =>
+                                  editcustomerscreen(
+                                toupdate: allcustomers[index],
+                              ),
+                            ),
+                          );
+                          if (updateresult != null) {
+                            setState(() {
+                              allcustomers[index] = updateresult;
+                            });
+                          }
+                        }, //NAVIGAZIONE A PAGINA DETTAGLIO
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return const Divider(
+                      indent: 20,
+                      endIndent: 20,
+                    );
+                  },
+                  itemCount: allcustomers.length,
+                ),
               ),
             );
           } else if (snapshot.hasError) {
@@ -174,6 +190,13 @@ class _CustomerscreenState extends State<Customerscreen> {
     return _memoizer.runOnce(() async {
       List<Customermodel> allcustomers = await Getall();
       return allcustomers;
+    });
+  }*/
+
+  /*Future<void> _pullrefresh() async {
+    List<Customermodel> allcustomer = await Getall();
+    setState(() {
+      getallcustomers = Future.value(allcustomer);
     });
   }*/
 }
