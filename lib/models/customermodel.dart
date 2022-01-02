@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 class Customermodel {
+  String? name;
   String? username;
   String? surname;
   String? email;
@@ -13,7 +14,8 @@ class Customermodel {
   String? profilepicisdeleted;
   String? filename;
   Customermodel(
-      {this.username,
+      {this.name,
+      this.username,
       this.surname,
       this.email,
       this.id,
@@ -28,6 +30,7 @@ class Customermodel {
   Map<String, dynamic> toMap() {
     //tojson
     return {
+      'name': name,
       'username': username,
       'surname': surname,
       'email': email,
@@ -45,6 +48,7 @@ class Customermodel {
   factory Customermodel.fromMap(Map<String, dynamic> map) {
     //fromjson
     return Customermodel(
+      name: map['name'],
       username: map['username'],
       surname: map['surname'],
       email: map['email'],
