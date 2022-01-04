@@ -1,4 +1,5 @@
 import 'package:authapi/models/customermodel.dart';
+import 'package:authapi/screens/customerscreen.dart';
 import 'package:authapi/services/customerservice.dart';
 import 'package:authapi/utils/snackbar.dart';
 import 'package:authapi/widgets/loginform.dart';
@@ -9,8 +10,8 @@ import 'package:path/path.dart';
 
 class editcustomerscreen extends StatefulWidget {
   final Customermodel toupdate;
-  const editcustomerscreen({Key? key, required this.toupdate})
-      : super(key: key);
+  final Customerservice _customerservice = Customerservice();
+  editcustomerscreen({Key? key, required this.toupdate}) : super(key: key);
 
   @override
   _editcustomerscreenState createState() => _editcustomerscreenState();
@@ -60,12 +61,13 @@ class _editcustomerscreenState extends State<editcustomerscreen> {
                 setState(() {
                   updatinguserinfo = true;
                 });
-                bool updateresponse =
-                    await UpdateCustomer(model: newone).whenComplete(
-                  () => setState(() {
-                    updatinguserinfo = false;
-                  }),
-                );
+                bool updateresponse = await widget._customerservice
+                    .UpdateCustomer(model: newone)
+                    .whenComplete(
+                      () => setState(() {
+                        updatinguserinfo = false;
+                      }),
+                    );
                 if (updateresponse) {
                   Utils.showsnackbar(
                       context, '${newone.username} updated successfully');
@@ -128,8 +130,9 @@ class _editcustomerscreenState extends State<editcustomerscreen> {
                               if (selectedpicture != null) {
                                 if (validatefileextension(selectedpicture)) {
                                   copyoldifnull(newone);
-                                  StreamedResponse respnse =
-                                      await Uploadprofilepicture(
+                                  StreamedResponse respnse = await widget
+                                      ._customerservice
+                                      .Uploadprofilepicture(
                                           file: selectedpicture,
                                           username: newone.username!);
                                   if (respnse.reasonPhrase == 'OK') {
@@ -150,6 +153,8 @@ class _editcustomerscreenState extends State<editcustomerscreen> {
                               } else {
                                 return;
                               }
+                            } else {
+                              return;
                             }
                           },
                         ),
@@ -185,8 +190,10 @@ class _editcustomerscreenState extends State<editcustomerscreen> {
                       if (validatefileextension(chosenpicture)) {
                         //chiamata api
                         copyoldifnull(newone);
-                        StreamedResponse respnse = await Uploadprofilepicture(
-                            file: chosenpicture, username: newone.username!);
+                        StreamedResponse respnse = await widget._customerservice
+                            .Uploadprofilepicture(
+                                file: chosenpicture,
+                                username: newone.username!);
                         if (respnse.reasonPhrase == 'OK') {
                           String newimageurl =
                               await respnse.stream.bytesToString();
@@ -324,8 +331,24 @@ class _editcustomerscreenState extends State<editcustomerscreen> {
                         'Rimuovi foto profilo',
                         style: TextStyle(color: Colors.red),
                       ),
-                      onTap:
-                          () {}, //chiamata api che fa rimozione foto se va a buon fine allora faccio anche io il set state
+                      onTap: () async {
+                        bool deleteprofileresponse = await Customerservice()
+                            .Deleteprofilepicture(
+                                username: usernamecontroller.text);
+                        if (deleteprofileresponse) {
+                          setState(() {
+                            newone.imagelink = null;
+                            widget.toupdate.imagelink = null;
+                          });
+                          Navigator.of(context)
+                              .pop(); //chiudo popup. nota non posso passare indietro un valore in quanto sopra aspetto la chiusura del popup ed in base ad essa
+                          //scelgo la fotocamera o la galleria quindi mi limito a chiudere il popup e navigare alla pagina customerscreen dove passo i nuovi dati
+                          await Future.delayed(const Duration(seconds: 2));
+                          //delay di due secondi e poi faccio navigazione
+                          Navigator.of(context).pop(widget
+                              .toupdate); //navigazione a pagina customerscreen
+                        }
+                      }, //chiamata api che fa rimozione foto se va a buon fine allora faccio anche io il set state
                     )
                   : Container()
             ],
