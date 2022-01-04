@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 bool jwtexpired = false;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  jwtexpired = await istokenexpired();
+  jwtexpired = await Authservice().istokenexpired();
   runApp(const MyApp());
 }
 
