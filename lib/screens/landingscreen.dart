@@ -8,6 +8,7 @@ import 'package:authapi/services/customerservice.dart';
 
 class Landingscreen extends StatefulWidget {
   Loginmodel? model;
+  final Customerservice _customerservice = Customerservice();
   Landingscreen({
     Key? key,
     this.model,
@@ -22,7 +23,6 @@ class _LandingscreenState extends State<Landingscreen> {
   late Future<Customermodel?> customermodel;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     customermodel = getloggeduserprofilepic(username: widget.model!.username!);
     /*WidgetsBinding.instance!.addPostFrameCallback((_) async {
@@ -119,12 +119,13 @@ class _LandingscreenState extends State<Landingscreen> {
   Future<Customermodel?> getloggeduserprofilepic(
       {required String username}) async {
     try {
-      loggedcustomer = await Getall().then((value) => value
-          .where(
-            (element) =>
-                element.username?.toLowerCase() == username.toLowerCase(),
-          )
-          .single);
+      loggedcustomer =
+          await widget._customerservice.Getall().then((value) => value!
+              .where(
+                (element) =>
+                    element.username?.toLowerCase() == username.toLowerCase(),
+              )
+              .single);
       if (loggedcustomer != null) {
         return loggedcustomer;
       }
