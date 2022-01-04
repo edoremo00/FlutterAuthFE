@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class Customerscreen extends StatefulWidget {
+  final Customerservice _customerservice = Customerservice();
   Customerscreen({Key? key}) : super(key: key);
 
   @override
@@ -13,12 +14,12 @@ class Customerscreen extends StatefulWidget {
 
 class _CustomerscreenState extends State<Customerscreen> {
   int index = 0;
-  late Future<List<Customermodel>> getallcustomers;
+  late Future<List<Customermodel>?> getallcustomers;
 
   @override
   void initState() {
     super.initState();
-    getallcustomers = Getall();
+    getallcustomers = widget._customerservice.Getall();
   }
 
   @override
@@ -34,12 +35,8 @@ class _CustomerscreenState extends State<Customerscreen> {
       ),
       body: FutureBuilder(
         future: getallcustomers,
-        builder: (context, AsyncSnapshot<List<Customermodel>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasData) {
+        builder: (context, AsyncSnapshot<List<Customermodel>?> snapshot) {
+          if (snapshot.hasData) {
             List<Customermodel>? allcustomers = snapshot.data;
             if (allcustomers!.isEmpty) {
               return const Center(
@@ -93,7 +90,8 @@ class _CustomerscreenState extends State<Customerscreen> {
                           SlidableAction(
                             label: 'Elimina',
                             onPressed: (context) async {
-                              bool deleteresponse = await Deletecustomer(
+                              bool deleteresponse =
+                                  await widget._customerservice.Deletecustomer(
                                 idcustomer: allcustomers[index].id!,
                               );
                               if (deleteresponse) {
@@ -118,7 +116,6 @@ class _CustomerscreenState extends State<Customerscreen> {
                       ),
                       child: ListTile(
                         leading: CircleAvatar(
-                          //backgroundColor: Colors.orange,
                           backgroundImage: NetworkImage(
                             allcustomers[index].imagelink == "" ||
                                     allcustomers[index].imagelink == null
