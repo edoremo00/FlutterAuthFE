@@ -7,6 +7,7 @@ import 'package:authapi/widgets/loginform.dart';
 import 'package:flutter/material.dart';
 
 class loginscreen extends StatefulWidget {
+  final Authservice _authservice = Authservice();
   loginscreen({Key? key}) : super(key: key);
 
   @override
@@ -87,7 +88,7 @@ class _loginscreenState extends State<loginscreen> {
                           child: Container(
                             margin: const EdgeInsets.only(top: 20),
                             child: loginform(
-                              maxlength: 12,
+                              maxlength: 32,
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
                               controller: usernamecontroller,
@@ -193,7 +194,8 @@ class _loginscreenState extends State<loginscreen> {
                                     false
                                 ? () async {
                                     _loginformkey.currentState!.save();
-                                    bool loginresult = await login(model);
+                                    bool loginresult =
+                                        await widget._authservice.login(model);
                                     if (!loginresult) {
                                       ScaffoldMessenger.of(context)
                                           .showMaterialBanner(
@@ -256,8 +258,7 @@ class _loginscreenState extends State<loginscreen> {
                             final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    const Registerformscreen(),
+                                builder: (context) => Registerformscreen(),
                               ),
                             );
                             if (result != null) {
