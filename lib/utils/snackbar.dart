@@ -11,7 +11,7 @@ class Utils {
             content: Row(
               children: [
                 icon == null
-                    ? Text('')
+                    ? const Text('')
                     : Icon(
                         icon,
                         color: iconcolor,
