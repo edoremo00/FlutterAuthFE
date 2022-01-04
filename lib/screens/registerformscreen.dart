@@ -7,7 +7,8 @@ import 'package:authapi/widgets/loginform.dart';
 import 'package:flutter/material.dart';
 
 class Registerformscreen extends StatefulWidget {
-  const Registerformscreen({Key? key}) : super(key: key);
+  final Authservice _authservice = Authservice();
+  Registerformscreen({Key? key}) : super(key: key);
 
   @override
   _RegisterformscreenState createState() => _RegisterformscreenState();
@@ -20,6 +21,7 @@ class _RegisterformscreenState extends State<Registerformscreen> {
   late TextEditingController passwordcontroller;
   late TextEditingController confirmpasswordcontroller;
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -241,7 +243,8 @@ class _RegisterformscreenState extends State<Registerformscreen> {
               child: ElevatedButton.icon(
                 onPressed: _formkey.currentState?.validate() == true
                     ? () async {
-                        bool registerresult = await register(reg);
+                        bool registerresult =
+                            await widget._authservice.register(reg);
                         if (registerresult) {
                           showregistersnackbar(
                             context: context,
