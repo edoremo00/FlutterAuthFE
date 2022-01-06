@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: jwtexpired ? loginscreen() : mainPage(),
+      home: jwtexpired ? Loginscreen() : const MainPage(),
     );
   }
 }
