@@ -3,21 +3,22 @@ import 'package:authapi/screens/customerscreen.dart';
 import 'package:authapi/services/customerservice.dart';
 import 'package:authapi/utils/snackbar.dart';
 import 'package:authapi/widgets/loginform.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 
-class editcustomerscreen extends StatefulWidget {
+class Editcustomerscreen extends StatefulWidget {
   final Customermodel toupdate;
   final Customerservice _customerservice = Customerservice();
-  editcustomerscreen({Key? key, required this.toupdate}) : super(key: key);
+  Editcustomerscreen({Key? key, required this.toupdate}) : super(key: key);
 
   @override
   _editcustomerscreenState createState() => _editcustomerscreenState();
 }
 
-class _editcustomerscreenState extends State<editcustomerscreen> {
+class _editcustomerscreenState extends State<Editcustomerscreen> {
   Customermodel newone = Customermodel();
   bool updatinguserinfo = false;
   bool cameraselected = false;
@@ -55,6 +56,7 @@ class _editcustomerscreenState extends State<editcustomerscreen> {
               int valueschanged = userchangedvalues();
               if (valueschanged == 0) {
                 Utils.showsnackbar(context, 'please modify at least one field');
+                return;
               }
               copyoldifnull(newone);
               if (_formkey.currentState?.validate() ?? false) {
@@ -112,61 +114,63 @@ class _editcustomerscreenState extends State<editcustomerscreen> {
             Center(
               child: Stack(
                 children: [
-                  ClipOval(
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Ink.image(
-                        width: 80,
-                        height: 80,
-                        child: InkWell(
-                          onTap: () async {
-                            bool? uploadchoice = await bottomsheet(context);
-                            if (uploadchoice != null) {
-                              XFile? selectedpicture = await _picker.pickImage(
-                                source: uploadchoice
-                                    ? ImageSource.camera
-                                    : ImageSource.gallery,
-                              );
-                              if (selectedpicture != null) {
-                                if (validatefileextension(selectedpicture)) {
-                                  copyoldifnull(newone);
-                                  StreamedResponse respnse = await widget
-                                      ._customerservice
-                                      .Uploadprofilepicture(
-                                          file: selectedpicture,
-                                          username: newone.username!);
-                                  if (respnse.reasonPhrase == 'OK') {
-                                    String newimageurl =
-                                        await respnse.stream.bytesToString();
-                                    setState(() {
-                                      //aggiorna la UI in pagina corrente
-                                      widget.toupdate.imagelink = newimageurl;
-                                      newone.imagelink = newimageurl;
-                                    });
-                                    Navigator.of(context).pop(newone);
-                                    //passo il nuovo valore alla pagina precedente che aggiornerà anche lei la UI
+                  Hero(
+                    tag: widget.toupdate.id.toString(),
+                    child: ClipOval(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Ink.image(
+                          width: 80,
+                          height: 80,
+                          child: InkWell(
+                            onTap: () async {
+                              bool? uploadchoice = await bottomsheet(context);
+                              if (uploadchoice != null) {
+                                XFile? selectedpicture =
+                                    await _picker.pickImage(
+                                  source: uploadchoice
+                                      ? ImageSource.camera
+                                      : ImageSource.gallery,
+                                );
+                                if (selectedpicture != null) {
+                                  if (validatefileextension(selectedpicture)) {
+                                    copyoldifnull(newone);
+                                    StreamedResponse respnse = await widget
+                                        ._customerservice
+                                        .Uploadprofilepicture(
+                                            file: selectedpicture,
+                                            username: newone.username!);
+                                    if (respnse.reasonPhrase == 'OK') {
+                                      String newimageurl =
+                                          await respnse.stream.bytesToString();
+                                      setState(() {
+                                        //aggiorna la UI in pagina corrente
+                                        widget.toupdate.imagelink = newimageurl;
+                                        newone.imagelink = newimageurl;
+                                      });
+                                      Navigator.of(context).pop(newone);
+                                      //passo il nuovo valore alla pagina precedente che aggiornerà anche lei la UI
+                                    }
+                                    //CHIAMATA API
+                                  } else {
+                                    return; //file non valido
                                   }
-                                  //CHIAMATA API
                                 } else {
-                                  return; //file non valido
+                                  return;
                                 }
                               } else {
                                 return;
                               }
-                            } else {
-                              return;
-                            }
-                          },
+                            },
+                          ),
+                          image: CachedNetworkImageProvider(
+                            widget.toupdate.imagelink == "" ||
+                                    widget.toupdate.imagelink == null
+                                ? 'https://www.kindpng.com/picc/m/22-223863_no-avatar-png-circle-transparent-png.png'
+                                : widget.toupdate.imagelink!,
+                          ),
+                          fit: BoxFit.cover,
                         ),
-                        image: widget.toupdate.imagelink == "" ||
-                                widget.toupdate.imagelink == null
-                            ? const NetworkImage(
-                                'https://www.kindpng.com/picc/m/22-223863_no-avatar-png-circle-transparent-png.png',
-                              )
-                            : NetworkImage(
-                                widget.toupdate.imagelink!,
-                              ),
-                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
