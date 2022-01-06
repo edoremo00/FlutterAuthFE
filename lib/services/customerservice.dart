@@ -12,31 +12,70 @@ const String uploadimagebaseurl =
 
 class Customerservice {
   Future<List<Customermodel>?> Getall() async {
-    String? token = await Tokenstorage.retrievetokenvalue('token');
-    Response r = await http.get(
-      Uri.parse('$customerbaseurl/Getallcustomers'),
-      headers: {'Authorization': 'Bearer $token'},
-    );
-    if (r.statusCode == 200) {
-      List<dynamic> body = jsonDecode(r.body);
-      List<Customermodel> allcustomers = body
-          .map(
-            (customer) => Customermodel.fromMap(customer),
-          )
-          .toList();
-      return allcustomers;
-    } else if (r.statusCode == 204) {
-      return [];
-    } else if (r.statusCode == 401) {
-      //refresh token
-      String? newtoken = await Authservice().Refreshtoken(oldtoken: token!);
-      if (newtoken != null) {
-        await Tokenstorage.savetoken('token', newtoken);
-        return Getall(); //senza return future builder non si fermava più rimaneva il circular progress indicator
-      } else {
-        throw 'unable to retrieve new token';
+    try {
+      String? token = await Tokenstorage.retrievetokenvalue('token');
+      Response r = await http.get(
+        Uri.parse('$customerbaseurl/Getallcustomers'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (r.statusCode == 200) {
+        List<dynamic> body = jsonDecode(r.body);
+        List<Customermodel> allcustomers = body
+            .map(
+              (customer) => Customermodel.fromMap(customer),
+            )
+            .toList();
+        return allcustomers;
+      } else if (r.statusCode == 204) {
+        return [];
+      } else if (r.statusCode == 401) {
+        //refresh token
+        String? newtoken = await Authservice().Refreshtoken(oldtoken: token!);
+        if (newtoken != null) {
+          await Tokenstorage.savetoken('token', newtoken);
+          return Getall(); //senza return future builder non si fermava più rimaneva il circular progress indicator
+        } else {
+          throw 'unable to retrieve new token';
+        }
       }
-    }
+    } catch (e) {}
+  }
+
+  Future<List<Customermodel>?> Getfilteredcustomers(String filter) async {
+    try {
+      String? token = await Tokenstorage.retrievetokenvalue('token');
+      Response r = await http.get(
+        Uri.parse('$customerbaseurl/Getallcustomers'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      if (r.statusCode == 200) {
+        List<dynamic> body = jsonDecode(r.body);
+        List<Customermodel> allcustomers = body
+            .map(
+              (customer) => Customermodel.fromMap(customer),
+            )
+            .toList();
+        return allcustomers
+            .where((element) =>
+                element.username!
+                    .toLowerCase()
+                    .contains(filter.toLowerCase()) ||
+                element.email!.toLowerCase().contains(filter.toLowerCase()))
+            .toList();
+      } else if (r.statusCode == 204) {
+        return [];
+      } else if (r.statusCode == 401) {
+        //refresh token
+        String? newtoken = await Authservice().Refreshtoken(oldtoken: token!);
+        if (newtoken != null) {
+          await Tokenstorage.savetoken('token', newtoken);
+          return Getfilteredcustomers(
+              filter); //senza return future builder non si fermava più rimaneva il circular progress indicator
+        } else {
+          throw 'unable to retrieve new token';
+        }
+      }
+    } catch (e) {}
   }
 
   Future<bool> Deletecustomer({required String idcustomer}) async {
