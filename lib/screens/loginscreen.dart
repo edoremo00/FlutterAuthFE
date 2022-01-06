@@ -6,15 +6,15 @@ import 'package:authapi/services/authservice.dart';
 import 'package:authapi/widgets/loginform.dart';
 import 'package:flutter/material.dart';
 
-class loginscreen extends StatefulWidget {
+class Loginscreen extends StatefulWidget {
   final Authservice _authservice = Authservice();
-  loginscreen({Key? key}) : super(key: key);
+  Loginscreen({Key? key}) : super(key: key);
 
   @override
-  _loginscreenState createState() => _loginscreenState();
+  _LoginscreenState createState() => _LoginscreenState();
 }
 
-class _loginscreenState extends State<loginscreen> {
+class _LoginscreenState extends State<Loginscreen> {
   late TextEditingController usernamecontroller;
   late TextEditingController passwordcontroller;
   bool hidepass = true;
@@ -227,7 +227,7 @@ class _loginscreenState extends State<loginscreen> {
                                         context,
                                         MaterialPageRoute<void>(
                                           builder: (BuildContext context) =>
-                                              mainPage(
+                                              MainPage(
                                             model: model,
                                           ),
                                         ),
