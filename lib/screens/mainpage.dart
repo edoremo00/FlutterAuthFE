@@ -6,29 +6,27 @@ import 'package:authapi/screens/landingscreen.dart';
 import 'package:authapi/screens/settingspage.dart';
 import 'package:flutter/material.dart';
 
-class mainPage extends StatefulWidget {
-  Loginmodel? model;
-  mainPage({Key? key, this.model}) : super(key: key);
+class MainPage extends StatefulWidget {
+  final Loginmodel? model;
+  const MainPage({Key? key, this.model}) : super(key: key);
 
   @override
-  _mainPageState createState() => _mainPageState();
+  _MainPageState createState() => _MainPageState();
 }
 
-class _mainPageState extends State<mainPage> {
+class _MainPageState extends State<MainPage> {
   int selectedindex = 0;
-  List<Widget> screens = [
-    Landingscreen(
-      model: Loginmodel(
-        username: 'devedo',
-        password: 'test',
-      ), //deve essere widget.model.username e widget.model.password ma ho problemi nell'accedervi
-    ),
-    Customerscreen(),
-    Settingspage(),
-  ];
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> screens = [
+      Landingscreen(
+          model: widget
+              .model //deve essere widget.model.username e widget.model.password ma ho problemi nell'accedervi
+          ),
+      Customerscreen(),
+      Settingspage(),
+    ];
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
