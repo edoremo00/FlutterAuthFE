@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:authapi/authutils/tokenstorage.dart';
@@ -24,7 +25,8 @@ class _LandingscreenState extends State<Landingscreen> {
   @override
   void initState() {
     super.initState();
-    customermodel = getloggeduserprofilepic(username: widget.model!.username!);
+    customermodel =
+        getloggeduserprofilepic(username: widget.model?.username ?? "");
     /*WidgetsBinding.instance!.addPostFrameCallback((_) async {
       loggedcustomer =
           await getloggeduserprofilepic(username: widget.model!.username!);
@@ -66,8 +68,21 @@ class _LandingscreenState extends State<Landingscreen> {
               }
               if (snapshot.hasData) {
                 Customermodel? logged = snapshot.data;
-                return CircleAvatar(
-                  backgroundImage: NetworkImage(logged!.imagelink!),
+                return CachedNetworkImage(
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(
+                    color: Colors.white,
+                  ),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  imageUrl: logged!.imagelink == "" || logged.imagelink == null
+                      ? 'https://www.kindpng.com/picc/m/22-223863_no-avatar-png-circle-transparent-png.png'
+                      : logged.imagelink!,
+                  fit: BoxFit.contain,
+                  imageBuilder: (context, imageProvider) {
+                    return CircleAvatar(
+                      backgroundImage: imageProvider,
+                    );
+                  },
                 );
               }
               if (snapshot.hasError) {
@@ -75,7 +90,12 @@ class _LandingscreenState extends State<Landingscreen> {
                   backgroundColor: Colors.red,
                 );
               }
-              return const CircleAvatar();
+              return const ClipOval(
+                child: Icon(
+                  Icons.error,
+                  color: Colors.red,
+                ),
+              );
             },
             future: customermodel,
           ),
@@ -109,7 +129,7 @@ class _LandingscreenState extends State<Landingscreen> {
       await Tokenstorage.removetokenfromstorage('token').then(
         (value) => Navigator.of(context).pushReplacement(
           MaterialPageRoute<void>(
-            builder: (BuildContext context) => loginscreen(),
+            builder: (BuildContext context) => Loginscreen(),
           ),
         ),
       );
@@ -129,8 +149,8 @@ class _LandingscreenState extends State<Landingscreen> {
       if (loggedcustomer != null) {
         return loggedcustomer;
       }
-    } catch (e) {
+    } on StateError {
       return null;
-    }
+    } catch (e) {}
   }
 }
